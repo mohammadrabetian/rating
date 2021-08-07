@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from app.core.exceptions import bad_request, wrong_isoformat
+from app.core.exception import bad_request, wrong_isoformat
 
 
 def validate_timestamps(timestamps: List[str]):
