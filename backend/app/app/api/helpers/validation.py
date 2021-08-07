@@ -4,7 +4,7 @@ from typing import List
 from app.core.exception import bad_request, wrong_isoformat
 
 
-def validate_timestamps(timestamps: List[str]):
+def validate_timestamps(timestamps: List[str]) -> int:
     """Validator function and convertor for timestamps
 
     1 - Validation check for timestamps to be of type ISO 8601
@@ -35,7 +35,7 @@ def validate_timestamps(timestamps: List[str]):
     return (timestamp_stop - timestamp_start).seconds
 
 
-async def validate_meters(start: int, stop: int):
+async def validate_meters(start: int, stop: int) -> int:
     """Validate meters and convert Wh to kWh"""
     if not stop > start:
         return bad_request(

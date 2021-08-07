@@ -13,7 +13,7 @@ async def apply_rate(
     api_key: APIKey = Depends(get_api_key),
     rate: Rate = Body(..., embed=True),
     cdr: CDR = Body(..., embed=True),
-):
+) -> RateResult:
     """Base API for applying rate to a CDR.
     Uses seperation of concerns design pattern, check or modify functions for
     different concerns.

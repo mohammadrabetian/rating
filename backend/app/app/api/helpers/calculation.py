@@ -1,10 +1,13 @@
+from typing import Tuple
+
+
 async def calculate_rate(
     total_seconds: int,
     total_kwh: float,
     energy_rate: float,
     time_rate: float,
     transaction_rate: float,
-):
+) -> Tuple[int, float]:
     """Calculate rate based on the price metrics and consumption metrics,
     Format price rates by precision of x decimal places based on the requirement.
 

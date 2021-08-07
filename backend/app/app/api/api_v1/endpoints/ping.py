@@ -4,5 +4,5 @@ router = APIRouter()
 
 
 @router.get("/", include_in_schema=False)
-async def ping_me():
+async def ping_me() -> str:
     return "pong!"

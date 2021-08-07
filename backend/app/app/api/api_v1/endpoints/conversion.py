@@ -26,7 +26,7 @@ async def apply_conversion(
     time: float = Query(..., gt=0),
     transaction: float = Query(..., gt=0),
     currency: Currency = Query(default=Currency.USD),
-):
+) -> ConvertedRateResult:
     """API for converting rates to another currency.
     Uses the free https://exchangerate.host service for the simplicity
     of implementation, for a more robust system, an app should minimise
