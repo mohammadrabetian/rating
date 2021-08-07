@@ -28,8 +28,8 @@ async def apply_rate(
         [JSON]: Calculated rates.
     """
 
-    total_seconds = validate_timestamps(
-        timestamps=[cdr.timestamp_start, cdr.timestamp_stop]
+    total_seconds = await validate_timestamps(
+        start=cdr.timestamp_start, stop=cdr.timestamp_stop
     )
     total_kwh = await validate_meters(start=cdr.meter_start, stop=cdr.meter_stop)
     overall, energy, time, transaction = await calculate_rate(
