@@ -8,13 +8,13 @@ from app.api.helpers import validate_meters, validate_timestamps
 
 
 @pytest.mark.asyncio
-async def test_validate_meters_wrong_input():
+async def test_validate_meters_wrong_input() -> None:
     with pytest.raises(HTTPException):
         await validate_meters(start=2, stop=1)
 
 
 @pytest.mark.asyncio
-async def test_validate_meters_correct_input():
+async def test_validate_meters_correct_input() -> None:
     start = 10000
     stop = 20000
     result = await validate_meters(start=start, stop=stop)
@@ -24,13 +24,13 @@ async def test_validate_meters_correct_input():
 
 
 @pytest.mark.asyncio
-async def test_validate_timestamps_wrong_input_type():
+async def test_validate_timestamps_wrong_input_type() -> None:
     with pytest.raises(HTTPException):
         await validate_timestamps(start=datetime.now(), stop=datetime.now())
 
 
 @pytest.mark.asyncio
-async def test_validate_timestamps_wrong_order_logic():
+async def test_validate_timestamps_wrong_order_logic() -> None:
     now = datetime.now().isoformat()
     two_hours_later = (datetime.now() + timedelta(hours=2)).isoformat()
     with pytest.raises(HTTPException):
@@ -38,7 +38,7 @@ async def test_validate_timestamps_wrong_order_logic():
 
 
 @pytest.mark.asyncio
-async def test_validate_timestamps_right_input():
+async def test_validate_timestamps_right_input() -> None:
     now = datetime.now().isoformat()
     two_hours_later = (datetime.now() + timedelta(hours=2)).isoformat()
     result = await validate_timestamps(start=now, stop=two_hours_later)

@@ -13,7 +13,7 @@ transaction_rate = 1.278
 
 
 @pytest.mark.asyncio
-async def test_calculate_rate_all_float_number():
+async def test_calculate_rate_all_float_number() -> None:
     overall, energy, time, transaction = await calculate_rate(
         total_seconds=total_seconds,
         total_kwh=total_kwh,
@@ -32,7 +32,7 @@ async def test_calculate_rate_all_float_number():
 
 
 @pytest.mark.asyncio
-async def test_calculate_rate_all_float_number_decimal_points_precision():
+async def test_calculate_rate_all_float_number_decimal_points_precision() -> None:
     overall, energy, time, transaction = await calculate_rate(
         total_seconds=total_seconds,
         total_kwh=total_kwh,
@@ -58,7 +58,7 @@ async def test_calculate_rate_all_float_number_decimal_points_precision():
 
 
 @pytest.mark.asyncio
-async def test_calculate_rate_all_whole_number():
+async def test_calculate_rate_all_whole_number() -> None:
     total_seconds = 3600
     total_kwh = 10
     energy_rate = 1

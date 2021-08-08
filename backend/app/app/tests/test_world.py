@@ -1,4 +1,4 @@
-def test_runs():
+def test_runs() -> None:
     # Just making sure testing framework works
 
     # Walrus operator
