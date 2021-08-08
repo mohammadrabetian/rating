@@ -78,23 +78,12 @@ async def test_calculate_rate_all_whole_number() -> None:
 
 
 @pytest.mark.asyncio
-async def test_convert_currency() -> None:
+async def test_convert_currency(raw_conversion_result) -> None:
     currency = Currency.USD
+    overall = 10
     energy = 3
     time = 2
     transaction = 5
-    raw_conversion_result = {
-        "motd": {
-            "msg": "If you or your company use this project or like what we doing, please consider backing us so we can continue maintaining and evolving this project.",
-            "url": "https://exchangerate.host/#/donate",
-        },
-        "success": True,
-        "query": {"from": "EUR", "to": "USD", "amount": 10},
-        "info": {"rate": 1.176132},
-        "historical": False,
-        "date": "2021-08-08",
-        "result": 11.761324,
-    }
 
     expected_result = {
         "overall": "11.76",
@@ -104,6 +93,7 @@ async def test_convert_currency() -> None:
 
     result = await convert_currency(
         raw_conversion_result=raw_conversion_result,
+        overall=overall,
         currency=currency,
         energy=energy,
         time=time,

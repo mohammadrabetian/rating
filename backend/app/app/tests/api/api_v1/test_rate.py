@@ -1,8 +1,11 @@
 import json
+from numbers import Number
 
 from fastapi.testclient import TestClient
 
 from app.core.config import settings
+
+headers = {"API-Key": settings.API_KEY_SECRET}
 
 
 def test_api_schema_validation_greater_than_zero(
@@ -35,7 +38,6 @@ def test_api_schema_validation_greater_than_zero(
             },
         ]
     }
-    headers = {"API-Key": settings.API_KEY_SECRET}
     r = client.post(f"{settings.API_V1_STR}/rate/", data=rate_cdr_obj, headers=headers)
     assert r.status_code == 422
     assert r.json() == expected_output
@@ -46,7 +48,46 @@ def test_api_correct_result(client: TestClient, rate_cdr_obj: dict) -> None:
         "overall": 7.04,
         "components": {"energy": 3.277, "time": 2.767, "transaction": 1},
     }
-    headers = {"API-Key": settings.API_KEY_SECRET}
     r = client.post(f"{settings.API_V1_STR}/rate/", data=rate_cdr_obj, headers=headers)
     assert r.status_code == 200
     assert r.json() == expected_output
+
+
+def test_default_currency(client: TestClient, clear_cache) -> None:
+    expected_output = {
+        "overall": 10,
+        "components": {"energy": 4, "time": 3, "transaction": 3},
+        "currency": "EUR",
+    }
+
+    r = client.get(
+        f"{settings.API_V1_STR}/rate/converted-rate/",
+        headers=headers,
+        params=[
+            ("overall", 10),
+            ("energy", 4),
+            ("time", 3),
+            ("transaction", 3),
+            ("currency", "EUR"),
+        ],
+    )
+    assert r.status_code == 200
+    assert r.json() == expected_output
+
+
+def test_currency_conversion(client: TestClient, clear_cache) -> None:
+
+    r = client.get(
+        f"{settings.API_V1_STR}/rate/converted-rate/",
+        headers=headers,
+        params=[
+            ("overall", 10),
+            ("energy", 4),
+            ("time", 3),
+            ("transaction", 3),
+            ("currency", "USD"),
+        ],
+    )
+    assert r.status_code == 200
+    result = r.json()
+    assert isinstance(result.get("overall"), Number)

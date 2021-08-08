@@ -1,6 +1,7 @@
 import json
 from typing import Generator
 
+import aioredis
 import pytest
 from fastapi.testclient import TestClient
 from redis import Redis
@@ -9,7 +10,7 @@ from app.core.config import settings
 from app.main import app
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def client() -> Generator:
     with TestClient(app) as c:
         yield c
@@ -30,13 +31,31 @@ def rate_cdr_obj():
     )
 
 
-redis = Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+@pytest.fixture
+def redis_connection():
+    return Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
 
 
 @pytest.fixture
-def clear_cache():
+def clear_cache(redis_connection):
     def _clear_cache():
-        redis.flushdb()
+        redis_connection.flushdb()
 
     _clear_cache()
     return _clear_cache
+
+
+@pytest.fixture
+def raw_conversion_result():
+    return {
+        "motd": {
+            "msg": "If you or your company use this project or like what we doing, please consider backing us so we can continue maintaining and evolving this project.",
+            "url": "https://exchangerate.host/#/donate",
+        },
+        "success": True,
+        "query": {"from": "EUR", "to": "USD", "amount": 10},
+        "info": {"rate": 1.176132},
+        "historical": False,
+        "date": "2021-08-08",
+        "result": 11.761324,
+    }

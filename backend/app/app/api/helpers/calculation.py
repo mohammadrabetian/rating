@@ -42,21 +42,17 @@ async def calculate_rate(
 
 async def convert_currency(
     raw_conversion_result: dict,
+    overall: float,
     currency: Currency,
     energy: float,
     time: float,
     transaction: float,
 ) -> dict:
     conversaion_rate = raw_conversion_result.get("info").get("rate")
-    converted_overall_rate = raw_conversion_result.get("result")
-    overall = (
-        "{0:0.2f}".format(converted_overall_rate)
-        if not converted_overall_rate.is_integer()
-        else converted_overall_rate
+    overall, converted_energy, converted_time, converted_transaction = map(
+        lambda rate: rate * conversaion_rate, [overall, energy, time, transaction]
     )
-    converted_energy, converted_time, converted_transaction = map(
-        lambda rate: rate * conversaion_rate, [energy, time, transaction]
-    )
+    overall = "{0:0.2f}".format(overall) if not overall.is_integer() else overall
     energy, time, transaction = map(
         lambda rate: "{0:0.3f}".format(rate)
         if not float(rate).is_integer()

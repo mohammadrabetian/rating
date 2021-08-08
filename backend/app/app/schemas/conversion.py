@@ -8,6 +8,7 @@ class Currency(Enum):
     GBP = "GBP"
     JPY = "JPY"
     CAD = "CAD"
+    EUR = "EUR"
 
 
 class ConvertedRateResult(RateResult):
