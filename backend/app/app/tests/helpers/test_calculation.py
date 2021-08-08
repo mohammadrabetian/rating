@@ -3,7 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from app.api.helpers import calculate_rate
+from app.api.helpers import calculate_rate, convert_currency
+from app.schemas.conversion import Currency
 
 total_seconds = 4096
 total_kwh = 10.9
@@ -74,3 +75,38 @@ async def test_calculate_rate_all_whole_number() -> None:
     assert all(
         map(lambda x: float(x).is_integer(), [overall, energy, time, transaction])
     )
+
+
+@pytest.mark.asyncio
+async def test_convert_currency() -> None:
+    currency = Currency.USD
+    energy = 3
+    time = 2
+    transaction = 5
+    raw_conversion_result = {
+        "motd": {
+            "msg": "If you or your company use this project or like what we doing, please consider backing us so we can continue maintaining and evolving this project.",
+            "url": "https://exchangerate.host/#/donate",
+        },
+        "success": True,
+        "query": {"from": "EUR", "to": "USD", "amount": 10},
+        "info": {"rate": 1.176132},
+        "historical": False,
+        "date": "2021-08-08",
+        "result": 11.761324,
+    }
+
+    expected_result = {
+        "overall": "11.76",
+        "components": {"energy": "3.528", "time": "2.352", "transaction": "5.881"},
+        "currency": Currency.USD,
+    }
+
+    result = await convert_currency(
+        raw_conversion_result=raw_conversion_result,
+        currency=currency,
+        energy=energy,
+        time=time,
+        transaction=transaction,
+    )
+    assert result == expected_result
