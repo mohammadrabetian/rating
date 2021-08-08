@@ -1,5 +1,7 @@
 from typing import Tuple
 
+from app.schemas.conversion import Currency
+
 
 async def calculate_rate(
     total_seconds: int,
@@ -36,3 +38,34 @@ async def calculate_rate(
     # Precision of 2 decimal places for the overall value
     overall = "{0:0.2f}".format(overall) if not overall.is_integer() else int(overall)
     return overall, energy, time, transaction
+
+
+async def convert_currency(
+    raw_conversion_result: dict,
+    currency: Currency,
+    energy: float,
+    time: float,
+    transaction: float,
+) -> dict:
+    conversaion_rate = raw_conversion_result.get("info").get("rate")
+    converted_overall_rate = raw_conversion_result.get("result")
+    overall = (
+        "{0:0.2f}".format(converted_overall_rate)
+        if not converted_overall_rate.is_integer()
+        else converted_overall_rate
+    )
+    converted_energy, converted_time, converted_transaction = map(
+        lambda rate: rate * conversaion_rate, [energy, time, transaction]
+    )
+    energy, time, transaction = map(
+        lambda rate: "{0:0.3f}".format(rate)
+        if not float(rate).is_integer()
+        else int(rate),
+        [converted_energy, converted_time, converted_transaction],
+    )
+    response = {
+        "overall": overall,
+        "components": {"energy": energy, "time": time, "transaction": transaction},
+        "currency": currency,
+    }
+    return response

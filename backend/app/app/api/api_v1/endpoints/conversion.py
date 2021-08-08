@@ -4,6 +4,7 @@ from logging import getLogger
 from fastapi import APIRouter, Depends, Query
 from fastapi.security.api_key import APIKey
 
+from app.api.helpers import convert_currency
 from app.core.config import settings
 from app.core.security import get_api_key
 from app.schemas import ConvertedRateResult, Currency
@@ -29,8 +30,7 @@ async def apply_conversion(
 ) -> ConvertedRateResult:
     """API for converting rates to another currency.
     Uses the free https://exchangerate.host service for the simplicity
-    of implementation, for a more robust system, an app should minimise
-    relying on third parties.
+    of implementation.
 
     Note: Default input currency is assumed to be EUR
 
@@ -45,7 +45,7 @@ async def apply_conversion(
     Returns:
         [JSON]: Converted rate | Default input rate
     """
-    conversion_result = dict()
+    raw_conversion_result = dict()
     response = dict()
     rate_convert_api = EXCHANGE_API.format(
         settings.DEFAULT_CURRENCY, currency.value, overall
@@ -54,30 +54,16 @@ async def apply_conversion(
     # Suppress exceptions (better alternative for try/except/pass)
     with contextlib.suppress(aiohttp.ClientError):
         async with session.get(rate_convert_api, timeout=2) as convertion_response:
-            conversion_result = await convertion_response.json()
+            raw_conversion_result = await convertion_response.json()
 
-    if conversion_result and conversion_result.get("result"):
-        conversaion_rate = conversion_result.get("info").get("rate")
-        converted_overall_rate = conversion_result.get("result")
-        overall = (
-            "{0:0.2f}".format(converted_overall_rate)
-            if not converted_overall_rate.is_integer()
-            else converted_overall_rate
+    if raw_conversion_result and raw_conversion_result.get("result"):
+        response = await convert_currency(
+            raw_conversion_result=raw_conversion_result,
+            currency=currency,
+            energy=energy,
+            time=time,
+            transaction=transaction,
         )
-        converted_energy, converted_time, converted_transaction = map(
-            lambda rate: rate * conversaion_rate, [energy, time, transaction]
-        )
-        energy, time, transaction = map(
-            lambda rate: "{0:0.3f}".format(rate)
-            if not rate.is_integer()
-            else int(rate),
-            [converted_energy, converted_time, converted_transaction],
-        )
-        response = {
-            "overall": overall,
-            "components": {"energy": energy, "time": time, "transaction": transaction},
-            "currency": currency,
-        }
     # If the service isn't available, return the default input currency
     else:
         logger.warning(
