@@ -1,6 +1,7 @@
 import os
 from typing import List, Union
 
+import aioredis
 from pydantic import AnyHttpUrl, BaseSettings, validator
 
 
@@ -10,9 +11,13 @@ class Settings(BaseSettings):
     SERVER_HOST: AnyHttpUrl
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
     API_KEY_SECRET = os.environ.get("API_KEY_SECRET")
+    REDIS_HOST = os.environ.get("REDIS_HOST")
+    REDIS_PORT = os.environ.get("REDIS_PORT")
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+    def assemble_cors_origins(
+        cls, v: Union[str, List[str]]
+    ) -> Union[List[str], str]:  # pragma: no cover
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
@@ -21,6 +26,15 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str
     DEFAULT_CURRENCY = "EUR"
+
+    async def init_redis(self, app):
+        app.redis = await aioredis.create_redis_pool(
+            f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}"
+        )
+
+    async def close_redis(self, app):
+        app.redis.close()
+        await app.redis.wait_closed()
 
     class Config:
         case_sensitive = True

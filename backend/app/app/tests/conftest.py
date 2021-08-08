@@ -3,7 +3,9 @@ from typing import Generator
 
 import pytest
 from fastapi.testclient import TestClient
+from redis import Redis
 
+from app.core.config import settings
 from app.main import app
 
 
@@ -26,3 +28,15 @@ def rate_cdr_obj():
             },
         }
     )
+
+
+redis = Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+
+
+@pytest.fixture
+def clear_cache():
+    def _clear_cache():
+        redis.flushdb()
+
+    _clear_cache()
+    return _clear_cache

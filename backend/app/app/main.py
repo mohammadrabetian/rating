@@ -1,4 +1,3 @@
-import aioredis
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
@@ -18,5 +17,16 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+
+@app.on_event("startup")
+async def startup():
+    await settings.init_redis(app=app)
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await settings.close_redis(app=app)
+
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
