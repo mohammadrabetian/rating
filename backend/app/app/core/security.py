@@ -4,7 +4,7 @@ from fastapi.security.api_key import APIKey, APIKeyHeader
 
 from app.core.config import settings
 
-API_KEY_NAME = "Authorization-Header"
+API_KEY_NAME = "API-Key"
 api_key_header = APIKeyHeader(name=API_KEY_NAME)
 
 

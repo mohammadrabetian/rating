@@ -35,7 +35,7 @@ def test_api_schema_validation_greater_than_zero(
             },
         ]
     }
-    headers = {"Authorization-Header": settings.API_KEY_SECRET}
+    headers = {"API-Key": settings.API_KEY_SECRET}
     r = client.post(f"{settings.API_V1_STR}/rate/", data=rate_cdr_obj, headers=headers)
     assert r.status_code == 422
     assert r.json() == expected_output
@@ -46,7 +46,7 @@ def test_api_correct_result(client: TestClient, rate_cdr_obj: dict) -> None:
         "overall": 7.04,
         "components": {"energy": 3.277, "time": 2.767, "transaction": 1},
     }
-    headers = {"Authorization-Header": settings.API_KEY_SECRET}
+    headers = {"API-Key": settings.API_KEY_SECRET}
     r = client.post(f"{settings.API_V1_STR}/rate/", data=rate_cdr_obj, headers=headers)
     assert r.status_code == 200
     assert r.json() == expected_output
