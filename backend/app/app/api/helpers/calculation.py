@@ -28,7 +28,9 @@ async def calculate_rate(
     # Precision of 3 decimal places for the prices
     # Additional check for if the float value is a whole number
     energy, time, transaction = map(
-        lambda rate: "{0:0.3f}".format(rate) if not rate.is_integer() else int(rate),
+        lambda rate: "{0:0.3f}".format(rate)
+        if not float(rate).is_integer()
+        else int(rate),
         [energy, time, transaction_rate],
     )
     # Precision of 2 decimal places for the overall value
