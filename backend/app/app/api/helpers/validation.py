@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from app.core.exception import bad_request, wrong_isoformat
 

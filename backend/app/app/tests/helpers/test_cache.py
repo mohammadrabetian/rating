@@ -1,9 +1,7 @@
-import asyncio
 import json
 from datetime import datetime, timedelta
 from unittest import mock
 
-import aioredis
 import pytest
 from fastapi.testclient import TestClient
 
@@ -73,7 +71,7 @@ async def test_set_conversion_result_to_cache(raw_conversion_result, redis_conne
 async def test_get_conversion_result_from_cache(
     raw_conversion_result, redis_connection
 ):
-    from app.main import app, startup
+    from app.main import app, shutdown, startup
 
     await startup()
 
@@ -85,11 +83,12 @@ async def test_get_conversion_result_from_cache(
     assert isinstance(cache_value, dict)
     assert cache_value == raw_conversion_result
     redis_connection.flushdb()
+    await shutdown()
 
 
 @pytest.mark.asyncio
 async def test_cache_invalidation(raw_conversion_result, redis_connection):
-    from app.main import app, startup
+    from app.main import app, shutdown, startup
 
     await startup()
 
@@ -107,3 +106,4 @@ async def test_cache_invalidation(raw_conversion_result, redis_connection):
     cache_value = await get_conversion_result_from_cache(currency)
     assert cache_value == {}
     redis_connection.flushdb()
+    await shutdown()

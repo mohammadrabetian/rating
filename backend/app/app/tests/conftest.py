@@ -1,7 +1,6 @@
 import json
 from typing import Generator
 
-import aioredis
 import pytest
 from fastapi.testclient import TestClient
 from redis import Redis
