@@ -15,6 +15,16 @@ def client() -> Generator:
         yield c
 
 
+# Seperate redis database for the tests
+@pytest.fixture
+async def redis_test_database():
+    from app.main import shutdown_event, startup_event
+
+    await startup_event(db=1)
+    yield
+    await shutdown_event()
+
+
 @pytest.fixture()
 def rate_cdr_obj():
     return json.dumps(
