@@ -80,10 +80,10 @@ async def apply_conversion(
 
 
     Args:
-        overall (float)
-        energy (float)
-        time (float)
-        transaction (float)
+        overall (Number)
+        energy (Number)
+        time (Number)
+        transaction (Number)
         currency (Currency): Currency to be converted into.
 
     Returns:

@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from redis import Redis
 
 from app.core.config import settings
-from app.main import app
+from app.main import app, shutdown_event, startup_event
 
 
 @pytest.fixture()
@@ -18,8 +18,6 @@ def client() -> Generator:
 # Seperate redis database for the tests
 @pytest.fixture
 async def redis_test_database():
-    from app.main import shutdown_event, startup_event
-
     await startup_event(db=1)
     yield
     await shutdown_event()
@@ -42,7 +40,7 @@ def rate_cdr_obj():
 
 @pytest.fixture
 def redis_connection():
-    return Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+    return Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=1)
 
 
 @pytest.fixture

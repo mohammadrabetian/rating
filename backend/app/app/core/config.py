@@ -1,7 +1,6 @@
 import os
 from typing import List, Union
 
-import aioredis
 from pydantic import AnyHttpUrl, BaseSettings, validator
 
 
@@ -26,15 +25,6 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str
     DEFAULT_CURRENCY = "EUR"
-
-    async def init_redis(self, app):
-        app.redis = await aioredis.create_redis_pool(
-            f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}"
-        )
-
-    async def close_redis(self, app):
-        app.redis.close()
-        await app.redis.wait_closed()
 
     class Config:
         case_sensitive = True

@@ -3,6 +3,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
 from app.core.config import settings
+from app.core.connections import redis_cache
 
 app = FastAPI(
     title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
@@ -20,13 +21,13 @@ if settings.BACKEND_CORS_ORIGINS:
 
 
 @app.on_event("startup")
-async def startup():
-    await settings.init_redis(app=app)
+async def startup_event(db=0):
+    await redis_cache.init_cache(db=db)
 
 
 @app.on_event("shutdown")
-async def shutdown():
-    await settings.close_redis(app=app)
+async def shutdown_event():
+    await redis_cache.close()
 
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
