@@ -61,3 +61,4 @@ dmypy.json
 # developer
 .vscode
 docker-stack.yml
+.DS_Store
